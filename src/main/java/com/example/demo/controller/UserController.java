@@ -24,10 +24,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<User> save(@RequestBody User user) {
+    @PostMapping("/users/{id}")
+    public ResponseEntity<User> save(@PathVariable("id") Integer id) {
         try {
-            return new ResponseEntity<>(iUserRepo.save(user), HttpStatus.CREATED);
+            return new ResponseEntity<>(iUserRepo.save(new User(id)), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
