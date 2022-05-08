@@ -1,8 +1,10 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,11 +16,23 @@ import javax.persistence.Table;
 @Entity
 @Setter
 @Getter
-@ToString
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Long discord_id;
-    private Long points;
+    private Integer id;
+    private String discord;
+    private String points;
+
+    public User(String discord, String points) {
+        this.discord = discord;
+        this.points = points;
+    }
+
+    @JsonCreator
+    public User(@JsonProperty Integer id, @JsonProperty String discord, @JsonProperty String points) {
+        this.id = id;
+        this.discord = discord;
+        this.points = points;
+    }
 }
