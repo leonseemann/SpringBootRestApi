@@ -18,18 +18,15 @@ import javax.persistence.Table;
 public class User {
     @Id
     private Integer id;
-    private String discord;
     private String points;
 
-    public User(String discord, String points) {
-        this.discord = discord;
+    public User(String points) {
         this.points = points;
     }
 
     @JsonCreator
-    public User(@JsonProperty Integer id, @JsonProperty String discord, @JsonProperty String points) {
+    public User(@JsonProperty Integer id, @JsonProperty String points) {
         this.id = id;
-        this.discord = discord;
         this.points = points;
     }
 
