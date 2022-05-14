@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
-import com.example.demo.repository.IUserRepo;
+import com.example.demo.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,45 +24,46 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    IUserRepo iUserRepo;
+    UserRepo userRepo;
 
-    @PostMapping("/users/{id}")
-    public ResponseEntity<User> save(@PathVariable("id") Integer id) {
+    @PostMapping("/api/user/{id}")
+    public ResponseEntity<User> save(@PathVariable("id") Long id) {
         try {
-            return new ResponseEntity<>(iUserRepo.save(new User(id)), HttpStatus.CREATED);
+            return new ResponseEntity<>(userRepo.save(new User(id)), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/users")
+    @GetMapping("/api/user")
     public ResponseEntity<Collection<User>> get(){
-        Collection<User> userCollection = iUserRepo.findAll();
+        Collection<User> userCollection = userRepo.findAll();
         List<User> response = new ArrayList<>(userCollection);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/users/{id}/points")
-    public ResponseEntity<String> getPointsOfUser(@PathVariable("id") Integer id){
-        Optional<User> user = iUserRepo.findById(id);
-        if (user.isPresent()){
-            return new ResponseEntity<>(user.get().getPoints(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @GetMapping("/api/user/{id}/points")
+    public ResponseEntity<String> getPointsOfUser(@PathVariable("id") Long id){
+        Optional<User> user = userRepo.findById(id);
+        return user.map(value -> new ResponseEntity<>(value.getPoints(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    @PatchMapping("/users/{id}")
-    public ResponseEntity<User> update(@PathVariable("id") Integer id, @RequestBody Map<Object, Object> fields) {
+    @PatchMapping("/api/user/{id}")
+    public ResponseEntity<User> update(@PathVariable("id") Long id, @RequestBody Map<Object, Object> fields) {
         try {
-            Optional<User> user = iUserRepo.findById(id);
+            Optional<User> user = userRepo.findById(id);
             if (user.isPresent()) {
                 fields.forEach((key, value) -> {
                     System.out.println("[forEach] " + key + ": " + value);
                     Field field = ReflectionUtils.findField(User.class, (String) key);
-                    field.setAccessible(true);
-                    ReflectionUtils.setField(field, user.get(), value);
+                    if (field != null) {
+                        field.setAccessible(true);
+                    }
+                    if (field != null) {
+                        ReflectionUtils.setField(field, user.get(), value);
+                    }
                 });
-                return new ResponseEntity<>(iUserRepo.save(user.get()), HttpStatus.OK);
+                return new ResponseEntity<>(userRepo.save(user.get()), HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {

@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 public class User {
     @Id
-    private Integer id;
+    private Long id;
     private String points;
 
     public User(String points) {
@@ -25,12 +25,12 @@ public class User {
     }
 
     @JsonCreator
-    public User(@JsonProperty Integer id, @JsonProperty String points) {
+    public User(@JsonProperty Long id, @JsonProperty String points) {
         this.id = id;
         this.points = points;
     }
 
-    public User(Integer id) {
+    public User(Long id) {
         this.id = id;
     }
 }
