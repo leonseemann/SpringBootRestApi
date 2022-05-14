@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class UserController {
     @Autowired
     UserRepo userRepo;
 
+    //Create user with id
     @PostMapping("/api/user/{id}")
     public ResponseEntity<User> save(@PathVariable("id") Long id) {
         try {
@@ -35,6 +37,19 @@ public class UserController {
         }
     }
 
+    //Delete user by id
+    @DeleteMapping("/apt/user/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Long id){
+        try {
+            userRepo.deleteById(id);
+            return new ResponseEntity<>("Deleted user @" + id, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //Get all user
     @GetMapping("/api/user")
     public ResponseEntity<Collection<User>> get(){
         Collection<User> userCollection = userRepo.findAll();
@@ -42,12 +57,15 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+    //Get user points with id
     @GetMapping("/api/user/{id}/points")
-    public ResponseEntity<String> getPointsOfUser(@PathVariable("id") Long id){
+    public ResponseEntity<Integer> getPointsOfUser(@PathVariable("id") Long id){
         Optional<User> user = userRepo.findById(id);
         return user.map(value -> new ResponseEntity<>(value.getPoints(), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
+    //Update user by id
     @PatchMapping("/api/user/{id}")
     public ResponseEntity<User> update(@PathVariable("id") Long id, @RequestBody Map<Object, Object> fields) {
         try {

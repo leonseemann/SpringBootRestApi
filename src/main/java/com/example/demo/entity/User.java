@@ -18,14 +18,14 @@ import javax.persistence.Table;
 public class User {
     @Id
     private Long id;
-    private String points;
+    private Integer points;
 
-    public User(String points) {
+    public User(Integer points) {
         this.points = points;
     }
 
     @JsonCreator
-    public User(@JsonProperty Long id, @JsonProperty String points) {
+    public User(@JsonProperty Long id, @JsonProperty Integer points) {
         this.id = id;
         this.points = points;
     }
