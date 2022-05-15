@@ -6,13 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -88,5 +82,16 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    //Add points by id
+    @PutMapping("/api/users/{id}/add/{points}/points")
+    public ResponseEntity<User> addPoints(@PathVariable("id") Long id, @PathVariable("points") Integer points){
+        Optional<User> user = userRepo.findById(id);
+        if (user.isPresent()) {
+            user.get().setPoints(user.get().getPoints() + points);
+            return new ResponseEntity<>(userRepo.save(user.get()), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
